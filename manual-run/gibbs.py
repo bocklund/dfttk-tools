@@ -11,7 +11,20 @@ Tool for doing Gibbs energy calculations.
 6. Set up the phonon calculations `python vib.py phonon relax-2/CONTCAR`
 7. Run them `for ff in ls */static */phonon; do cd $ff && vasp_std && cd ../.. ; done`
 8. Post process (see phonopy)
-
+# 8a. for ff in ls {00..10}; do echo $ff; done
+In each directory, run:
+8a. `phonopy --fc vasprun.xml`
+8b. create a mesh.conf of
+```
+ATOM_NAME = Ni
+DIM = 1 1 1
+MP = 12 12 12
+CELL_FILENAME = POSCAR
+```
+8ca. Create the thermal properties (if LEPSILON used, run `phonopy-vasp-born vasprun.xml`) `phonopy --readfc -tp --nac  mesh.conf` (note LEPSILON can be expensive relative to simple calculations)
+8cb. `phonopy --readfc -tp  mesh.conf` (`for ff in {00..10}; do cp mesh.conf $ff/phonon && cd $ff/phonon && phonopy --fc vasprun.xml && phonopy --readfc -tp --tmax=1800 -s mesh.conf && phonopy --readfc -p -s mesh.conf && cd ../.. ; done`)
+8d. Create electronic F(T) for all V `phonopy-vasp-efe --tmax=1500 {00..10}/phonon/vasprun.xml`
+8e. `phonopy-qha -s --tmax=1300 --efe fe-v.dat e-v.dat {00..10}/phonon/thermal_properties.yaml`
 
 ## TODO
 - Handle input of magnetic moments
