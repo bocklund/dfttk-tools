@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 # Gibbs.py
 Tool for doing Gibbs energy calculations.
@@ -91,8 +92,27 @@ def phonon(structure, nimages, minfrac, maxfrac):
         phonon.write_input(os.path.join(dirname, 'phonon'))
 
 
+@click.command()
+@click.argument('structure')
+@click.argument('scaling_matrix')
+@click.option('-o', '--output', default='SPOSCAR', help='Make a supercell using 1, 3, or 9 matrix elements')
+def supercell(structure, scaling_matrix, output):
+    s = Structure.from_file(structure)
+    scaling_matrix = [int(i) for i in scaling_matrix.split()]
+    if len(scaling_matrix) == 1:
+        mat = np.array(scaling_matrix[0])
+    elif len(scaling_matrix) == 3:
+        mat = np.array(scaling_matrix)
+    elif len(scaling_matrix) == 9:
+        mat = np.array(scaling_matrix).reshape(3,3)
+    else:
+        print("Failed to make supercell matrix: found {}".format(mat))
+    s.make_supercell(mat)
+    s.to(filename=output)
+
 cli.add_command(relax)
 cli.add_command(phonon)
+cli.add_command(supercell)
 
 if __name__ == '__main__':
     cli()
