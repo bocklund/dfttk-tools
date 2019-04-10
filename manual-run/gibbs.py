@@ -10,9 +10,9 @@ Tool for doing Gibbs energy calculations.
 4. Set up files to do a second relaxation `python vib.py relax relax-1/CONTCAR --postfix=-2`
 5. Run the files, `cd relax-2 && vasp_std && cd ..`
 6. Set up the phonon calculations `python vib.py phonon relax-2/CONTCAR`
-7. Run them `for ff in ls */static */phonon; do cd $ff && vasp_std && cd ../.. ; done`
+7. Run them `for ff in */static */phonon; do echo $ff; cd $ff && vasp_std && cd ../.. ; done`
 8. Post process (see phonopy)
-# 8a. for ff in ls {00..10}; do echo $ff; done
+# 8a. for ff in {00..10}; do echo $ff; done
 In each directory, run:
 8a. `phonopy --fc vasprun.xml`
 8b. create a mesh.conf of
